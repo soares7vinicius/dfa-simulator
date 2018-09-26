@@ -25,6 +25,26 @@ public class Automaton {
         this.endings = this.fillEndings(list);
     }
     
+    public boolean verifySentence(String s) {
+        String currentState = this.begin;
+        String currentSymbol;
+        
+        for (int i = 0; i < s.length(); i++) {
+            currentSymbol = s.charAt(i) + "";
+
+            for (Transition transition : this.transitions) {
+                if (currentSymbol.equals(transition.getSymbol())
+                        && currentState.equals(transition.getFrom())) {
+                    
+                    currentState = transition.getTo();
+                    break;
+                }
+            }
+        }
+        
+        return this.endings.contains(currentState);
+    }
+    
     public boolean validateDFA() {
         for (int i = 0; i < transitions.size() - 1; i++) {
             Transition a = transitions.get(i);

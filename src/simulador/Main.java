@@ -36,6 +36,10 @@ public class Main extends javax.swing.JFrame {
         initComponents();
         jfc = new JFileChooser();
         jfc.setFileFilter(new FileNameExtensionFilter("txt", "txt", "text"));
+        
+        this.btnVerify.setEnabled(false);
+        this.fldSentence.setEditable(false);
+        this.fldSentence.setEnabled(false);
     }
 
     /**
@@ -54,8 +58,8 @@ public class Main extends javax.swing.JFrame {
         fldSentence = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         btnVerify = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
         lblMsg = new javax.swing.JLabel();
+        lblSentence = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Simulador Universal de AFD");
@@ -83,10 +87,11 @@ public class Main extends javax.swing.JFrame {
         jLabel1.setText("Sentença a ser verificada");
 
         btnVerify.setText("Verificar");
-
-        jLabel2.setText("Mensagem:");
-
-        lblMsg.setText("nenhuma mensagem");
+        btnVerify.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerifyActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -106,14 +111,13 @@ public class Main extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnVerify, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnVerify, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblSentence, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblMsg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(lblMsg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -126,17 +130,18 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(fldFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnFile))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblMsg))
+                .addComponent(lblMsg)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnVerify))
-                .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblSentence)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnVerify)))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
@@ -144,14 +149,15 @@ public class Main extends javax.swing.JFrame {
 
     private void btnFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileActionPerformed
         // TODO add your handling code here:
-        
-        this.btnVerify.setEnabled(true);
-        this.fldSentence.setEditable(true);
-        this.fldSentence.setEnabled(true);
+
         
         if(jfc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             file = jfc.getSelectedFile();
             fldFile.setText(file.getName());
+            
+            this.btnVerify.setEnabled(true);
+            this.fldSentence.setEditable(true);
+            this.fldSentence.setEnabled(true);
             
             list = new ArrayList<>();
             
@@ -190,6 +196,18 @@ public class Main extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_btnFileActionPerformed
+
+    private void btnVerifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerifyActionPerformed
+        // TODO add your handling code here:
+        
+        if(automaton.verifySentence(fldSentence.getText())) {
+            this.lblSentence.setText("A sentença é válida!");
+            this.lblSentence.setForeground(new Color(0, 153, 0));
+        } else {
+            this.lblSentence.setText("A sentença não é válida!");
+            this.lblSentence.setForeground(Color.red);
+        }
+    }//GEN-LAST:event_btnVerifyActionPerformed
 
     /**
      * @param args the command line arguments
@@ -232,9 +250,9 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JTextField fldFile;
     private javax.swing.JTextArea fldSentence;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblMsg;
+    private javax.swing.JLabel lblSentence;
     private javax.swing.JLabel lblTitle;
     // End of variables declaration//GEN-END:variables
 }
