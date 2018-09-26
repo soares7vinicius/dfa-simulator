@@ -1,18 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package simulador;
+package simulator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author vinicius
- */
 public class Automaton {
     
     private final List<Transition> transitions;
@@ -80,18 +71,4 @@ public class Automaton {
         
         return l;
     }
-
-    public List<Transition> getTransitions() {
-        return transitions;
-    }
-
-    public List<String> getEndings() {
-        return endings;
-    }
-
-    public String getBegin() {
-        return begin;
-    }
-
-    
 }
