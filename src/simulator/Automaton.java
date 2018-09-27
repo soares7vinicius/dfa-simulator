@@ -2,7 +2,9 @@ package simulator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Automaton {
     
@@ -11,11 +13,16 @@ public class Automaton {
     private final String begin;
     
     private String reading;
+    
+    private final List<String> alphabet;
+    private final List<String> states;
 
     public Automaton(List<String> list) {
         this.transitions = this.fillTransitions(list);
         this.begin = this.getBegin(list);
         this.endings = this.fillEndings(list);
+        this.alphabet = this.fillAlphabet(this.transitions);
+        this.states = this.fillStates(this.transitions);
         this.reading = new String();
     }
     
@@ -36,7 +43,6 @@ public class Automaton {
                 if (currentSymbol.equals(transition.getSymbol())
                         && currentState.equals(transition.getFrom())) {
                     
-                    
                     this.reading += this.formatReading(transition, s, i);
                     
                     currentState = transition.getTo();
@@ -55,17 +61,48 @@ public class Automaton {
     }
     
     public boolean validateDFA() {
-        for (int i = 0; i < transitions.size() - 1; i++) {
-            Transition a = transitions.get(i);
-            for (int j = i + 1; j < transitions.size(); j++) {
-                Transition b = transitions.get(j);
-                if ((a.getFrom().equals(b.getFrom())) && 
-                        (a.getSymbol().equals(b.getSymbol()))) {
+        int n = this.states.size();
+        int m = this.alphabet.size();
+        int mxValidation[][] = new int[n][m];
+        
+        for(Transition t : this.transitions) {
+            int idxSymbol = this.alphabet.indexOf(t.getSymbol());
+            int idxState = this.states.indexOf(t.getFrom());
+            
+            if(mxValidation[idxState][idxSymbol] == 0)
+                mxValidation[idxState][idxSymbol] = 1;
+            else
+                return false;
+        }
+        
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                if(mxValidation[i][j] == 0)
                     return false;
-                }
             }
         }
+        
         return true;
+    }
+    
+    private List<String> fillAlphabet(List<Transition> transitions)  {
+        Set<String> s = new HashSet<>();
+        
+        transitions.forEach((t) -> {
+            s.add(t.getSymbol());
+        });
+        
+        return new ArrayList<>(s);
+    }
+    
+    private List<String> fillStates(List<Transition> transitions) {
+        Set<String> s = new HashSet<>();
+        
+        transitions.forEach((t) -> {
+            s.add(t.getFrom());
+        });
+        
+        return new ArrayList<>(s);
     }
     
     private List<Transition> fillTransitions(List<String> list) {
