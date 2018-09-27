@@ -9,23 +9,35 @@ public class Automaton {
     private final List<Transition> transitions;
     private final List<String> endings;
     private final String begin;
+    
+    private String reading;
 
     public Automaton(List<String> list) {
         this.transitions = this.fillTransitions(list);
         this.begin = this.getBegin(list);
         this.endings = this.fillEndings(list);
+        this.reading = new String();
     }
     
-    public boolean verifySentence(String s) {
+    public boolean verifySentence(String s){
+        
         String currentState = this.begin;
         String currentSymbol;
+        
+        this.reading = new String();
+        this.reading += "<html>";
+        this.reading += s + "<br>";
         
         for (int i = 0; i < s.length(); i++) {
             currentSymbol = s.charAt(i) + "";
 
             for (Transition transition : this.transitions) {
+                        
                 if (currentSymbol.equals(transition.getSymbol())
                         && currentState.equals(transition.getFrom())) {
+                    
+                    
+                    this.reading += this.formatReading(transition, s, i);
                     
                     currentState = transition.getTo();
                     break;
@@ -33,7 +45,13 @@ public class Automaton {
             }
         }
         
+        this.reading += "</html>";
         return this.endings.contains(currentState);
+    }
+    
+    private String formatReading(Transition transition, String s, int i) {
+        return String.format("%s<font color='blue'>q%s</font><font color='red'>%s</font>%s<br>",
+                s.substring(0,i), transition.getFrom(), transition.getSymbol(), s.substring(i+1, s.length()));
     }
     
     public boolean validateDFA() {
@@ -70,5 +88,9 @@ public class Automaton {
         l.addAll(Arrays.asList(e));
         
         return l;
+    }
+
+    public String getReading() {
+        return reading;
     }
 }
