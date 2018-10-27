@@ -1,4 +1,4 @@
-package simulator;
+package simulator.control;
 
 public class Transition {
     

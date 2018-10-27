@@ -1,5 +1,6 @@
-package simulator;
+package simulator.control;
 
+import simulator.control.Transition;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -130,4 +131,22 @@ public class Automaton {
     public String getReading() {
         return reading;
     }
+
+    protected List<String> getAlphabet() {
+        return alphabet;
+    }
+    
+    protected int getStatesCount() {
+        return this.states.size();
+    }
+
+    protected List<Transition> getTransitions() {
+        return transitions;
+    }
+
+    protected List<String> getEndings() {
+        return endings;
+    }
+    
+    
 }
