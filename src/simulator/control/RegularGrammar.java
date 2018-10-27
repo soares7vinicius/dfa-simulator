@@ -3,6 +3,7 @@ package simulator.control;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,12 +15,20 @@ public class RegularGrammar {
     private final String[] alphabet = 
             "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z".split(",");
     private List<String> combinations; /* S, A, B, ... Z, AA, AB, ... ZZ*/
+    private final String epsilon = "\u03B5";
     
     public RegularGrammar(Automaton a) {
         this.makeCombinations();
         
         this.terminals = a.getAlphabet();
-        this.makeRG(a);
+        this.makeRGFromAutomaton(a);
+    }
+    
+    public RegularGrammar(List<String> l) {
+        this.makeCombinations();
+        
+        this.terminals = this.getTerminals(l);
+        this.makeRGFromFile(l);
     }
     
     private void makeCombinations() {
@@ -33,7 +42,7 @@ public class RegularGrammar {
         }
     }
     
-    private void makeRG(Automaton a) {
+    private void makeRGFromAutomaton(Automaton a) {
         this.p = new LinkedHashMap<>();
         
         for(int i = 0; i < a.getStatesCount(); i++) {
@@ -52,7 +61,25 @@ public class RegularGrammar {
         for(String e : a.getEndings()) {
             int ending = Integer.parseInt(e);
             List<String> l = this.p.get(combinations.get(ending));
-            l.add("\u03B5"); //epsilon
+            l.add(this.epsilon);
+        }
+    }
+    
+    private void makeRGFromFile(List<String>l) {
+        this.p = new LinkedHashMap<>();
+        
+        List<String> n = new ArrayList<>(Arrays.asList(l.get(1).substring(2).split(",")));
+        for(String s : n) this.p.put(s, new ArrayList<>()); //adiciona as proposicoes no map
+        
+        for(int i = 2; i < l.size(); i++) { // para cada linha de cada proposicao
+            List<String> line = new ArrayList<>(Arrays.asList(l.get(i).substring(2).split(",")));
+            for(String j : line) {
+                if(j.equals("null")) {
+                    this.p.get(l.get(i).charAt(0)+"").add(this.epsilon);
+                }else {
+                    this.p.get(l.get(i).charAt(0)+"").add(j);
+                }
+            }
         }
     }
 
@@ -89,6 +116,33 @@ public class RegularGrammar {
             sb.delete(sb.length()-2, sb.length()+1);
         }
         sb.append("<br>}");
+        
+        return sb.toString();
+    }
+    
+    private List<String> getTerminals(List<String> l) {
+        return new ArrayList<>(Arrays.asList(l.get(0).substring(2).split(",")));
+    }
+    
+    public String toAutomatonString() {
+        StringBuilder sb = new StringBuilder();
+        Set<String> finals = new LinkedHashSet<>();
+        
+        sb.append("<html>");
+        for(String k : this.p.keySet()) {
+            for(String s : this.p.get(k)) {
+                if(s.length() == 1) finals.add(k); //epsilon ou terminais
+                else sb.append(k).append(",").append(s.charAt(0)).append(",")
+                        .append(s.charAt(1)).append("<br>");
+            }   
+        }
+        sb.append("I=").append("S").append("<br>");
+        sb.append("F=");
+        for(String s : finals) {
+            sb.append(s).append(",");
+        }
+        sb.delete(sb.length()-1, sb.length()+1);
+        sb.append("<br>");
         
         return sb.toString();
     }
